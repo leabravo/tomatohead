@@ -68,8 +68,9 @@ completion in order to get the current percentaje of the char-
           (cancel-timer tomatohead-timer)
           (setq perc 100)
           (setq num (- break 1))
-          (face-remap-add-relative 'header-line :background "#65000B")
-          (face-remap-add-relative 'header-line :foreground "#55AB55")
+          (set-face-attribute 'header-line nil
+                              :background "#65000B"
+                              :foreground "#55AB55")
           (setq tomatohead-timer
                 ;; Starting at zero seconds, each second.
                 (run-at-time "0 sec" 1 'tomatohead-break)))))
@@ -102,16 +103,17 @@ completion in order to get the current percentaje of the char-
 (defun tomatohead-start ()
   "Start the Pomodoro specifying WORK and BREAK."
 
-  (face-remap-add-relative 'header-line :background "#65000B")
-  (face-remap-add-relative 'header-line :foreground "#DF3232")
+  (set-face-attribute 'header-line nil
+                      :background "#65000B"
+                      :foreground "#DF3232")
   
   (setq tomatohead-timer
         (run-at-time "0 sec" 1 'tomatohead-work)))
 
 ;;;###autoload
 (define-minor-mode tomatohead-mode
-  :group 'tomatohead
   :global t
+  :group 'tomatohead
   :lighter (number-to-string num)
   (if tomatohead-mode
       (progn
