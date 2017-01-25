@@ -24,7 +24,7 @@
 (defvar perc 0)
 (defvar tomatohead-timer nil)
 
-(defgroup tomatohead
+(defgroup tomatohead nil
   "Group for TomatoHead customizations."
   :group 'frames)
 
@@ -112,7 +112,6 @@ completion in order to get the current percentaje of the char-
 (define-minor-mode tomatohead-mode
   :group 'tomatohead
   :lighter (number-to-string num)
-  :init-value (tomatohead-mode -1)
   (if tomatohead-mode
       (progn
         (tomatohead-start))))
