@@ -66,13 +66,13 @@ completion in order to get the current percentaje of the char-
     (if (eq 1500 num)
         (progn
           (cancel-timer tomatohead-timer)
-          (setq perc 0)
-          (setq num break)
+          (setq perc 100)
+          (setq num (- break 1))
           (face-remap-add-relative 'header-line :background "#65000B")
           (face-remap-add-relative 'header-line :foreground "#55AB55")
           (setq tomatohead-timer
                 ;; Starting at zero seconds, each second.
-                (run-at-time "0 sec" 0.01 'tomatohead-break)))))
+                (run-at-time "0 sec" 1 'tomatohead-break)))))
 
 (defun tomatohead-break ()
   "BREAK!."
@@ -80,8 +80,8 @@ completion in order to get the current percentaje of the char-
   (setq perc (perc-of-char num (qty-of-chars num break) break))
   (setq current-char
         (cond ((eq perc 0)
-               ""
-               (<= perc 33)
+               "")
+              ((and (> perc 0) (<= perc 33))
                "░")
               ((and (> perc 33) (<= perc 66))
                "▒")
@@ -106,11 +106,12 @@ completion in order to get the current percentaje of the char-
   (face-remap-add-relative 'header-line :foreground "#DF3232")
   
   (setq tomatohead-timer
-        (run-at-time "0 sec" 0.01 'tomatohead-work)))
+        (run-at-time "0 sec" 1 'tomatohead-work)))
 
 ;;;###autoload
 (define-minor-mode tomatohead-mode
   :group 'tomatohead
+  :global t
   :lighter (number-to-string num)
   (if tomatohead-mode
       (progn
