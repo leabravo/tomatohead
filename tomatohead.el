@@ -21,8 +21,8 @@
 
 (defvar work 1500)
 (defvar break 600)
-(defvar lgbreak 1000)
-(defvar pomonum 1)
+(defvar lgbreak 900)
+(defvar pomonum 4)
 (defvar pomoatm 0)
 (defvar perc 0)
 (defvar tomatohead-timer nil)
@@ -80,7 +80,7 @@ completion in order to get the current percentaje of the char-
                                     :background "#000000"
                                     :foreground "#FFFFFF")
                 (setq tomatohead-timer
-                      (run-at-time "0 sec" 0.01 'tomatohead-long-break)))
+                      (run-at-time "0 sec" 1 'tomatohead-long-break)))
             (progn
               (cancel-timer tomatohead-timer)
               (setq perc 100)
@@ -90,7 +90,7 @@ completion in order to get the current percentaje of the char-
                                   :foreground "#55AB55")
               (setq tomatohead-timer
                     ;; Starting at zero seconds, each second.
-                    (run-at-time "0 sec" 0.01 'tomatohead-break)))))))
+                    (run-at-time "0 sec" 1 'tomatohead-break)))))))
 
 (defun tomatohead-break ()
   "BREAK!."
@@ -113,8 +113,16 @@ completion in order to get the current percentaje of the char-
   (setq num (- num 1))
   (redraw-modeline)
   (if (eq num 0)
-      (progn (cancel-timer tomatohead-timer)
-             (tomatohead-mode -1))))
+      (progn
+        (cancel-timer tomatohead-timer)
+        (setq perc 0)
+        (setq num 1)
+        (set-face-attribute 'header-line nil
+                            :background "#65000B"
+                            :foreground "#DF3232")
+        (setq tomatohead-timer
+              ;; Starting at zero seconds, each second.
+              (run-at-time "0 sec" 1 'tomatohead-work)))))
 
 (defun tomatohead-long-break ()
   "Long BREAK!."
@@ -150,7 +158,7 @@ completion in order to get the current percentaje of the char-
                       :foreground "#DF3232")
   
   (setq tomatohead-timer
-        (run-at-time "0 sec" 0.01 'tomatohead-work)))
+        (run-at-time "0 sec" 1 'tomatohead-work)))
 
 ;;;###autoload
 (define-minor-mode tomatohead-mode
