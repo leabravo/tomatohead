@@ -21,6 +21,8 @@
 
 (defvar work 1500)
 (defvar break 600)
+(defvar lgbreak 1000)
+(defvar pomonum 1)
 (defvar perc 0)
 (defvar tomatohead-timer nil)
 
@@ -65,28 +67,40 @@ completion in order to get the current percentaje of the char-
     (redraw-modeline)
     (if (eq 1500 num)
         (progn
-          (cancel-timer tomatohead-timer)
-          (setq perc 100)
-          (setq num (- break 1))
-          (set-face-attribute 'header-line nil
-                              :background "#65000B"
-                              :foreground "#55AB55")
-          (setq tomatohead-timer
-                ;; Starting at zero seconds, each second.
-                (run-at-time "0 sec" 1 'tomatohead-break)))))
+          (setq pomonum (- pomonum 1))
+          (if (eq pomonum 0)
+              (progn
+                (cancel-timer tomatohead-timer)
+                (setq perc 100)
+                (setq num (- lgbreak 1))
+                (set-face-attribute 'header-line nil
+                                    :background "#000000"
+                                    :foreground "#FFFFFF")
+                (setq tomatohead-timer
+                      (run-at-time "0 sec" 0.01 'tomatohead-long-break)))
+            (progn
+              (cancel-timer tomatohead-timer)
+              (setq perc 100)
+              (setq num (- break 1))
+              (set-face-attribute 'header-line nil
+                                  :background "#65000B"
+                                  :foreground "#55AB55")
+              (setq tomatohead-timer
+                    ;; Starting at zero seconds, each second.
+                    (run-at-time "0 sec" 0.01 'tomatohead-break)))))))
 
 (defun tomatohead-break ()
   "BREAK!."
   (interactive)
   (setq perc (perc-of-char num (qty-of-chars num break) break))
   (setq current-char
-        (cond ((eq perc 0)
+        (cond ((and (eq perc 0) (<= perc 25))
                "")
-              ((and (> perc 0) (<= perc 33))
+              ((and (> perc 25) (<= perc 50))
                "░")
-              ((and (> perc 33) (<= perc 66))
+              ((and (> perc 50) (<= perc 75))
                "▒")
-              ((and (> perc 66) (<= perc 100))
+              ((and (> perc 75) (<= perc 100))
                "▓")
               ))
   (setq header-line-format
@@ -99,7 +113,30 @@ completion in order to get the current percentaje of the char-
       (progn (cancel-timer tomatohead-timer)
              (tomatohead-mode -1))))
 
-
+(defun tomatohead-long-break ()
+  "Long BREAK!."
+  (interactive)
+  (setq perc (perc-of-char num (qty-of-chars num lgbreak) lgbreak))
+  (setq current-char
+        (cond ((and (eq perc 0) (<= perc 25))
+               "")
+              ((and (> perc 25) (<= perc 50))
+               "░")
+              ((and (> perc 50) (<= perc 75))
+               "▒")
+              ((and (> perc 75) (<= perc 100))
+               "▓")
+              ))
+  (setq header-line-format
+        (concat (make-string (if (= (qty-of-chars num lgbreak) 0)
+                                    0 (qty-of-chars num lgbreak)) ?█)
+                             current-char));(number-to-string num))
+  (setq num (- num 1))
+  (redraw-modeline)
+  (if (eq num 0)
+      (progn (cancel-timer tomatohead-timer)
+             (tomatohead-mode -1))))
+        
 (defun tomatohead-start ()
   "Start the Pomodoro specifying WORK and BREAK."
 
@@ -108,7 +145,7 @@ completion in order to get the current percentaje of the char-
                       :foreground "#DF3232")
   
   (setq tomatohead-timer
-        (run-at-time "0 sec" 1 'tomatohead-work)))
+        (run-at-time "0 sec" 0.01 'tomatohead-work)))
 
 ;;;###autoload
 (define-minor-mode tomatohead-mode
