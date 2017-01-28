@@ -23,6 +23,7 @@
 (defvar break 600)
 (defvar lgbreak 1000)
 (defvar pomonum 1)
+(defvar pomoatm 0)
 (defvar perc 0)
 (defvar tomatohead-timer nil)
 
@@ -52,7 +53,9 @@ completion in order to get the current percentaje of the char-
     ;;(sit-for 0.1)
     (setq perc (perc-of-char num (qty-of-chars num work) work))
     (setq current-char
-          (cond ((<= perc 33)
+          (cond ((and (eq perc 0) (<= perc 25))
+                 "")
+                ((and (> perc 25) (<= perc 50))
                  "░")
                 ((and (> perc 33) (<= perc 66))
                  "▒")
@@ -67,8 +70,8 @@ completion in order to get the current percentaje of the char-
     (redraw-modeline)
     (if (eq 1500 num)
         (progn
-          (setq pomonum (- pomonum 1))
-          (if (eq pomonum 0)
+          (setq pomoatm (+ pomoatm 1))
+          (if (eq pomonum pomoatm)
               (progn
                 (cancel-timer tomatohead-timer)
                 (setq perc 100)
@@ -135,6 +138,8 @@ completion in order to get the current percentaje of the char-
   (redraw-modeline)
   (if (eq num 0)
       (progn (cancel-timer tomatohead-timer)
+             (setq pomoatm 0) ;; Reset the counter back to 0
+             (setq header-line-format nil)
              (tomatohead-mode -1))))
         
 (defun tomatohead-start ()
