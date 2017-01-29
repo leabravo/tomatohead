@@ -6,9 +6,9 @@ Tomatohead is a basic Pomodoro timer using the header line for visual feedback o
 
 This project was started as a way of learning the basic Emacs building blocks as well as some Lisp and although the basic functionality is there, there's still plenty of room for improvement. Here are the items which would make the mode great:
 
-- [x] Basic 25/5 work/break Timer.
-- [ ] Long break.
-- [ ] Number of iterations before long break.
+- [x] Basic 25/5/15 work/break/lgbreak Timer.
+- [x] Long break.
+- [x] Number of iterations before long break (4 Pomodoros default).
 - [ ] Customizable timers.
 - [ ] 100% refactored and consistent code.
 
