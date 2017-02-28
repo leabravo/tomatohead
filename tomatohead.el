@@ -15,27 +15,51 @@
 
 ;;; Code:
 
+
 (eval-when-compile (require 'cl))
 
-(defvar tomatohead-num 1)
-
-(defvar tomatohead-work 1500)
-(defvar tomatohead-break 600)
-(defvar tomatohead-lgbreak 900)
-(defvar tomatohead-pomonum 4)
-(defvar tomatohead-pomoatm 0)
-(defvar tomatohead-perc 0)
-(defvar tomatohead-timer nil)
 
 (defgroup tomatohead nil
   "Group for TomatoHead customizations."
   :group 'frames)
+
+(defcustom tomatohead-num 1
+  "Qty of iterations."
+  :group 'tomatohead)
+
+(defcustom tomatohead-work 1500
+  "Amnt of work time."
+  :group 'tomatohead)
+
+(defcustom tomatohead-break 600
+  "Amnt of break time."
+  :group 'tomatohead)
+
+(defcustom tomatohead-lgbreak 900
+  "Amnt of long break."
+  :group 'tomatohead)
+
+(defcustom tomatohead-pomonum 4
+  "Amnt of Pomodoros."
+  :group 'tomatohead)
+
+(defcustom tomatohead-pomoatm 0
+  "Current Pomodoro."
+  :group 'tomatohead)
+
+(defvar tomatohead-perc 0
+  "Percentaje of current char.")
+
+(defvar tomatohead-timer nil
+  "Default nil timer.")
+
 
 (defun qty-of-chars (iter time)
   "Count the quantity of characters based on the percentaje of.
 the Pomodoro that's been consumed.  Truncate to only fetch
 by one percent at a time.  ITER TIME."
   (truncate (* (/ (* iter 1.0) time) (window-total-width))))
+
 
 (defun perc-of-char (iter chars time)
   "Substract the non decimal part from the current percentaje of.
@@ -91,6 +115,7 @@ completion in order to get the current percentaje of the char-
                     ;; Starting at zero seconds, each second.
                     (run-at-time "0 sec" 1 'tomatohead-break)))))))
 
+
 (defun tomatohead-break ()
   "BREAK!."
   (setq tomatohead-perc (perc-of-char tomatohead-num (qty-of-chars tomatohead-num tomatohead-break) tomatohead-break))
@@ -121,6 +146,7 @@ completion in order to get the current percentaje of the char-
         (setq tomatohead-timer
               ;; Starting at zero seconds, each second.
               (run-at-time "0 sec" 1 'tomatohead-work)))))
+
 
 (defun tomatohead-long-break ()
   "Long BREAK!."
@@ -158,14 +184,18 @@ completion in order to get the current percentaje of the char-
   (setq tomatohead-timer
         (run-at-time "0 sec" 1 'tomatohead-work)))
 
+
 ;;;###autoload
 (define-minor-mode tomatohead-mode
   :global t
   :group 'tomatohead
   (if tomatohead-mode
       (tomatohead-start)
-    (tomatohead-mode -1)))
-
+      (progn
+        (setq tomatohead-mode nil)
+        (dolist (timer timer-list)
+          (cancel-timer timer))
+        (setq header-line-format nil))))
 
 (provide 'tomatohead)
 
