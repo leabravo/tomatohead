@@ -4,14 +4,16 @@
 
 ;; Author: Leandro Bravo <leabravo@gmail.com>
 ;; Version: 0.1
-;; Keywords: Pomodoro, Productivity
+;; Keywords: tools, convenience
 ;; URL: https://github.com/leabravo/tomatohead
+
+;; Package-Requires: ((emacs "24"))
 
 ;;; Commentary:
 
 ;; This is a simple implementation of a Pomodoro Timer which uses the
 ;; header for visualizing progress.
-;; Usage (tomato-head-comence lenght-of-work lenght-of-break)
+;; Usage M-x tomatohead-mode
 
 ;;; Code:
 
@@ -54,7 +56,7 @@
   "Default nil timer.")
 
 
-(defun qty-of-chars (iter time)
+(defun tomatohead-qty-of-chars (iter time)
   "Quantity of characters to display.
 A = 'window-total-width' function returns the width of the
 window in characters,
@@ -65,7 +67,7 @@ to fetch only the integer part."
   (truncate (* (/ (* iter 1.0) time) (window-total-width))))
 
 
-(defun perc-of-char (iter chars time)
+(defun tomatohead-perc-of-char (iter chars time)
   "Substract the non decimal part from the current percentaje of.
 completion in order to get the current percentaje of the char-
 -acter processed i.e 3.76 - 3 = .76 of the current char compl-
@@ -75,7 +77,7 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-work ()
     "TODO add parameter for time and times 60 it."
-    (setq tomatohead-perc (perc-of-char tomatohead-num (qty-of-chars tomatohead-num tomatohead-work) tomatohead-work))
+    (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-work) tomatohead-work))
     (setq current-char
           (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
                  "")
@@ -89,9 +91,9 @@ completion in order to get the current percentaje of the char-
 
     (setq header-line-format
           ;; Create a string of squares and append the current char at the end.
-          (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-work) 0)
+          (concat (make-string (if (= (tomatohead-qty-of-chars tomatohead-num tomatohead-work) 0)
                                    0
-                                 (qty-of-chars tomatohead-num tomatohead-work))
+                                 (tomatohead-qty-of-chars tomatohead-num tomatohead-work))
                                ?█)
                   current-char))
 
@@ -128,7 +130,7 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-break ()
   "BREAK!."
-  (setq tomatohead-perc (perc-of-char tomatohead-num (qty-of-chars tomatohead-num tomatohead-break) tomatohead-break))
+  (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-break) tomatohead-break))
   (setq current-char
         (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
                "")
@@ -141,9 +143,9 @@ completion in order to get the current percentaje of the char-
               ))
   
   (setq header-line-format
-        (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-break) 0)
+        (concat (make-string (if (= (tomatohead-qty-of-chars tomatohead-num tomatohead-break) 0)
                                  0
-                               (qty-of-chars tomatohead-num tomatohead-break))
+                               (tomatohead-qty-of-chars tomatohead-num tomatohead-break))
                              ?█)
                 current-char))
 
@@ -164,7 +166,7 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-long-break ()
   "Long BREAK!."
-  (setq tomatohead-perc (perc-of-char tomatohead-num (qty-of-chars tomatohead-num tomatohead-lgbreak) tomatohead-lgbreak))
+  (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-lgbreak) tomatohead-lgbreak))
   (setq current-char
         (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
                "")
@@ -177,9 +179,9 @@ completion in order to get the current percentaje of the char-
               ))
 
   (setq header-line-format
-        (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-lgbreak) 0)
+        (concat (make-string (if (= (tomatohead-qty-of-chars tomatohead-num tomatohead-lgbreak) 0)
                                  0
-                               (qty-of-chars tomatohead-num tomatohead-lgbreak))
+                               (tomatohead-qty-of-chars tomatohead-num tomatohead-lgbreak))
                              ?█)
                 current-char)) ;; Make a string out of the qty. of current-char.
 
