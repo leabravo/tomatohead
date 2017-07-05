@@ -206,18 +206,20 @@ completion in order to get the current percentaje of the char-
 
 ;;;###autoload
 (define-minor-mode tomatohead-mode
-  :global nil
+  "Tomatohead pomodoro"
+  :global t
   :group 'tomatohead
-  :after-hook (if tomatohead-mode
-                   (tomatohead-start)
-                 (progn
-                   (cancel-timer tomatohead-timer)
-                   (setq header-line-format nil)
-                   (setq tomatohead-mode nil)
-                   (setq tomatohead-pomonum 0)
-                   (setq tomatohead-perc 0)
-                   (setq tomatohead-num 0)
-                   (setq tomatohead-pomoatm 0))))
+  (if tomatohead-mode
+      (tomatohead-start)
+    (if tomatohead-timer
+        (progn
+          (cancel-timer tomatohead-timer)
+          (setq header-line-format nil)
+          (setq tomatohead-mode nil)
+          (setq tomatohead-pomonum 0)
+          (setq tomatohead-perc 0)
+          (setq tomatohead-num 0)
+          (setq tomatohead-pomoatm 0)))))
 
 (provide 'tomatohead)
 
