@@ -211,15 +211,20 @@ completion in order to get the current percentaje of the char-
   :group 'tomatohead
   (if tomatohead-mode
       (tomatohead-start)
+    (setq tomatohead-mode nil)
     (if tomatohead-timer
         (progn
           (cancel-timer tomatohead-timer)
-          (setq header-line-format nil)
+          ;;(setq header-line-format nil)
           (setq tomatohead-mode nil)
           (setq tomatohead-pomonum 0)
           (setq tomatohead-perc 0)
           (setq tomatohead-num 0)
-          (setq tomatohead-pomoatm 0)))))
+          (setq tomatohead-pomoatm 0)
+          (dolist (buffer (buffer-list))
+            (with-current-buffer buffer
+              (setq header-line-format nil)
+              (setq tomatohead-mode nil)))))))
 
 (provide 'tomatohead)
 
