@@ -55,9 +55,13 @@
 
 
 (defun qty-of-chars (iter time)
-  "Count the quantity of characters based on the percentaje of.
-the Pomodoro that's been consumed.  Truncate to only fetch
-by one percent at a time.  ITER TIME."
+  "Quantity of characters to display.
+A = 'window-total-width' function returns the width of the
+window in characters,
+B = '(/ (* ITER 1.0) TIME)' calculates the percentage of
+the current iteration respect to the Pomodoro time.
+A times B gives the % of the window (in chars).  Truncate
+to fetch only the integer part."
   (truncate (* (/ (* iter 1.0) time) (window-total-width))))
 
 
@@ -80,20 +84,26 @@ completion in order to get the current percentaje of the char-
                  "")
                 ((and (> tomatohead-perc 25) (<= tomatohead-perc 50))
                  "░")
-                ((and (> tomatohead-perc 33) (<= tomatohead-perc 66))
+                ((and (> tomatohead-perc 50) (<= tomatohead-perc 75))
                  "▒")
-                ((and (> tomatohead-perc 66) (<= tomatohead-perc 100))
+                ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
                  "▓")
                 ))
     (setq header-line-format
+          ;; Create a string of squares and append the current char at the end.
           (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-work) 0)
-                                   0 (qty-of-chars tomatohead-num tomatohead-work)) ?█)
+                                   0
+                                 (qty-of-chars tomatohead-num tomatohead-work))
+                               ?█)
                   current-char))
     (setq tomatohead-num (+ 1 tomatohead-num))
     (force-mode-line-update)
+    ;; Check if work pomodoro is finished.
     (if (eq 1500 tomatohead-num)
         (progn
+          ;; Add one to the completed pomodoros counter.
           (setq tomatohead-pomoatm (+ tomatohead-pomoatm 1))
+          ;; Check if we reached the last pomodoro.
           (if (eq tomatohead-pomonum tomatohead-pomoatm)
               (progn
                 (cancel-timer tomatohead-timer)
@@ -104,6 +114,7 @@ completion in order to get the current percentaje of the char-
                                     :foreground "#FFFFFF")
                 (setq tomatohead-timer
                       (run-at-time "0 sec" 1 'tomatohead-long-break)))
+            ;; If it was not the last pomodoro, perform a short break.
             (progn
               (cancel-timer tomatohead-timer)
               (setq tomatohead-perc 100)
@@ -163,8 +174,10 @@ completion in order to get the current percentaje of the char-
               ))
   (setq header-line-format
         (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-lgbreak) 0)
-                                    0 (qty-of-chars tomatohead-num tomatohead-lgbreak)) ?█)
-                             current-char)) ; Make a string out of the qty. of current-char.
+                                 0
+                               (qty-of-chars tomatohead-num tomatohead-lgbreak))
+                             ?█)
+                current-char)) ;; Make a string out of the qty. of current-char.
   (setq tomatohead-num (- tomatohead-num 1))
   (force-mode-line-update)
   (if (eq tomatohead-num 0)
@@ -187,15 +200,16 @@ completion in order to get the current percentaje of the char-
 
 ;;;###autoload
 (define-minor-mode tomatohead-mode
-  :global t
+  :global nil
   :group 'tomatohead
-  (if tomatohead-mode
-      (tomatohead-start)
-      (progn
-        (setq tomatohead-mode nil)
-        (dolist (timer timer-list)
-          (cancel-timer timer))
-        (setq header-line-format nil))))
+  :after-hook  (if tomatohead-mode
+                   (tomatohead-start)
+                 (progn
+                   (setq tomatohead-mode nil)
+                   ;; I'm busting all timers... sorry </3
+                   (dolist (timer timer-list)
+                     (cancel-timer timer))
+                   (setq header-line-format nil))))
 
 (provide 'tomatohead)
 
