@@ -49,10 +49,10 @@
   "Current Pomodoro."
   :group 'tomatohead)
 
-(defvar tomatohead-perc 0
+(defcustom tomatohead-perc 0
   "Percentaje of current char.")
 
-(defvar tomatohead-timer nil
+(defcustom tomatohead-timer nil
   "Default nil timer.")
 
 
@@ -196,7 +196,6 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-start ()
   "Start the Pomodoro specifying WORK and BREAK."
-  (interactive)
   (set-face-attribute 'header-line nil
                       :background "#65000B"
                       :foreground "#DF3232")
@@ -209,14 +208,16 @@ completion in order to get the current percentaje of the char-
 (define-minor-mode tomatohead-mode
   :global nil
   :group 'tomatohead
-  :after-hook  (if tomatohead-mode
+  :after-hook (if tomatohead-mode
                    (tomatohead-start)
                  (progn
+                   (cancel-timer tomatohead-timer)
+                   (setq header-line-format nil)
                    (setq tomatohead-mode nil)
-                   ;; I'm busting all timers... sorry </3
-                   (dolist (timer timer-list)
-                     (cancel-timer timer))
-                   (setq header-line-format nil))))
+                   (setq tomatohead-pomonum 0)
+                   (setq tomatohead-perc 0)
+                   (setq tomatohead-num 0)
+                   (setq tomatohead-pomoatm 0))))
 
 (provide 'tomatohead)
 
