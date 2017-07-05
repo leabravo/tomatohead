@@ -75,9 +75,6 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-work ()
     "TODO add parameter for time and times 60 it."
-    ;;(symbol-plist 'header-line-format)
-    ;;(setq tomatohead-num 600)
-    ;;(sit-for 0.1)
     (setq tomatohead-perc (perc-of-char tomatohead-num (qty-of-chars tomatohead-num tomatohead-work) tomatohead-work))
     (setq current-char
           (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
@@ -89,6 +86,7 @@ completion in order to get the current percentaje of the char-
                 ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
                  "▓")
                 ))
+
     (setq header-line-format
           ;; Create a string of squares and append the current char at the end.
           (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-work) 0)
@@ -96,6 +94,7 @@ completion in order to get the current percentaje of the char-
                                  (qty-of-chars tomatohead-num tomatohead-work))
                                ?█)
                   current-char))
+
     (setq tomatohead-num (+ 1 tomatohead-num))
     (force-mode-line-update)
     ;; Check if work pomodoro is finished.
@@ -140,10 +139,14 @@ completion in order to get the current percentaje of the char-
               ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
                "▓")
               ))
+  
   (setq header-line-format
         (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-break) 0)
-                                 0 (qty-of-chars tomatohead-num tomatohead-break)) ?█)
-                current-char));(number-to-string num))
+                                 0
+                               (qty-of-chars tomatohead-num tomatohead-break))
+                             ?█)
+                current-char))
+
   (setq tomatohead-num (- tomatohead-num 1))
   (force-mode-line-update)
   (if (eq tomatohead-num 0)
@@ -172,12 +175,14 @@ completion in order to get the current percentaje of the char-
               ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
                "▓")
               ))
+
   (setq header-line-format
         (concat (make-string (if (= (qty-of-chars tomatohead-num tomatohead-lgbreak) 0)
                                  0
                                (qty-of-chars tomatohead-num tomatohead-lgbreak))
                              ?█)
                 current-char)) ;; Make a string out of the qty. of current-char.
+
   (setq tomatohead-num (- tomatohead-num 1))
   (force-mode-line-update)
   (if (eq tomatohead-num 0)
