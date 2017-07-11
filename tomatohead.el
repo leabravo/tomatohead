@@ -23,7 +23,7 @@
 
 (defgroup tomatohead nil
   "Group for TomatoHead customizations."
-  :group 'frames)
+  :group 'faces)
 
 (defcustom tomatohead-num 1
   "Qty of iterations."
@@ -50,7 +50,7 @@
   :group 'tomatohead)
 
 (defcustom tomatohead-perc 0
-  "Percentaje of current char.")
+  "Percentage of current char.")
 
 (defcustom tomatohead-timer nil
   "Default nil timer.")
@@ -68,16 +68,43 @@ to fetch only the integer part."
 
 
 (defun tomatohead-perc-of-char (iter chars time)
-  "Substract the non decimal part from the current percentaje of.
-completion in order to get the current percentaje of the char-
--acter processed i.e 3.76 - 3 = .76 of the current char compl-
--eted (times 100 to make int) ITER CHARS TIME"
+  "Fetch the decimal part of the number representing the elapsed percentage.
+This function calculates the ratio between the current ITER and the total
+timer and scales the 'window-total-width' (CHARS)  with the obtained number.
+Then by discarding the integer part of it, we can deduce the fraction of the
+elapsed TIME multiplying it by 100 to make an integer."
   (truncate (* 100 (- (* (/ (* iter 1.0) time) (window-total-width)) chars))))
+
+(defface tomatohead-while-working
+  '((t :background "#65000B"
+       :foreground "#DF3232"))
+  "Header line Face for the current Pomodoro work session."
+  :group 'tomatohead)
+
+(defface tomatohead-while-sbreak
+  '((t :background "#65000B"
+       :foreground "#55AB55"))
+  "Header line Face for the current Pomodoro short break."
+  :group 'tomatohead)
+
+(defface tomatohead-while-lbreak
+  '((t :background "#00005F"
+       :foreground "#0087AF"))
+  "Header line Face for the current Pomodoro long break."
+  :group 'tomatohead)
 
 
 (defun tomatohead-work ()
     "TODO add parameter for time and times 60 it."
-    (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-work) tomatohead-work))
+    (set-face-attribute 'header-line nil
+                        :background nil
+                        :foreground nil
+                        :inherit 'tomatohead-while-working)
+
+    (setq tomatohead-perc (tomatohead-perc-of-char
+                           tomatohead-num
+                           (tomatohead-qty-of-chars tomatohead-num tomatohead-work)
+                           tomatohead-work))
     (setq current-char
           (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
                  "")
@@ -110,9 +137,6 @@ completion in order to get the current percentaje of the char-
                 (cancel-timer tomatohead-timer)
                 (setq tomatohead-perc 100)
                 (setq tomatohead-num (- tomatohead-lgbreak 1))
-                (set-face-attribute 'header-line nil
-                                    :background "#000000"
-                                    :foreground "#FFFFFF")
                 (setq tomatohead-timer
                       (run-at-time "0 sec" 1 'tomatohead-long-break)))
             ;; If it was not the last pomodoro, perform a short break.
@@ -120,9 +144,6 @@ completion in order to get the current percentaje of the char-
               (cancel-timer tomatohead-timer)
               (setq tomatohead-perc 100)
               (setq tomatohead-num (- tomatohead-break 1))
-              (set-face-attribute 'header-line nil
-                                  :background "#65000B"
-                                  :foreground "#55AB55")
               (setq tomatohead-timer
                     ;; Starting at zero seconds, each second.
                     (run-at-time "0 sec" 1 'tomatohead-break)))))))
@@ -130,6 +151,8 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-break ()
   "BREAK!."
+  (set-face-attribute 'header-line nil
+                      :inherit 'tomatohead-while-sbreak)
   (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-break) tomatohead-break))
   (setq current-char
         (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
@@ -156,9 +179,6 @@ completion in order to get the current percentaje of the char-
         (cancel-timer tomatohead-timer)
         (setq tomatohead-perc 0)
         (setq tomatohead-num 1)
-        (set-face-attribute 'header-line nil
-                            :background "#65000B"
-                            :foreground "#DF3232")
         (setq tomatohead-timer
               ;; Starting at zero seconds, each second.
               (run-at-time "0 sec" 1 'tomatohead-work)))))
@@ -166,6 +186,8 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-long-break ()
   "Long BREAK!."
+  (set-face-attribute 'header-line nil
+                      :inherit 'tomatohead-while-lbreak)
   (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-lgbreak) tomatohead-lgbreak))
   (setq current-char
         (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
@@ -196,10 +218,6 @@ completion in order to get the current percentaje of the char-
 
 (defun tomatohead-start ()
   "Start the Pomodoro specifying WORK and BREAK."
-  (set-face-attribute 'header-line nil
-                      :background "#65000B"
-                      :foreground "#DF3232")
-  
   (setq tomatohead-timer
         (run-at-time "0 sec" 1 'tomatohead-work)))
 
@@ -207,7 +225,7 @@ completion in order to get the current percentaje of the char-
 ;;;###autoload
 (define-minor-mode tomatohead-mode
   "Tomatohead pomodoro"
-  :global t
+  :global nil
   :group 'tomatohead
   (if tomatohead-mode
       (tomatohead-start)
@@ -215,7 +233,6 @@ completion in order to get the current percentaje of the char-
     (if tomatohead-timer
         (progn
           (cancel-timer tomatohead-timer)
-          ;;(setq header-line-format nil)
           (setq tomatohead-mode nil)
           (setq tomatohead-pomonum 4)
           (setq tomatohead-perc 0)
