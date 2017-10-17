@@ -15,6 +15,21 @@
 ;; header for visualizing progress.
 ;; Usage M-x tomatohead-mode
 
+;;; License:
+
+;; This file is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
+
+;; This file is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; For a full copy of the GNU General Public License
+;; see <http://www.gnu.org/licenses/>.
+
 ;;; Code:
 
 
@@ -23,7 +38,7 @@
 
 (defgroup tomatohead nil
   "Group for TomatoHead customizations."
-  :group 'faces)
+  :group 'applications)
 
 (defcustom tomatohead-num 1
   "Qty of iterations."
@@ -106,14 +121,16 @@ elapsed TIME multiplying it by 100 to make an integer."
                            (tomatohead-qty-of-chars tomatohead-num tomatohead-work)
                            tomatohead-work))
     (setq current-char
-          (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
+          (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 20))
                  "")
-                ((and (> tomatohead-perc 25) (<= tomatohead-perc 50))
+                ((and (> tomatohead-perc 20) (<= tomatohead-perc 40))
                  "░")
-                ((and (> tomatohead-perc 50) (<= tomatohead-perc 75))
+                ((and (> tomatohead-perc 40) (<= tomatohead-perc 60))
                  "▒")
-                ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
+                ((and (> tomatohead-perc 60) (<= tomatohead-perc 80))
                  "▓")
+                ((and (> tomatohead-perc 80) (<= tomatohead-perc 100))
+                 "█")
                 ))
 
     (setq header-line-format
@@ -127,7 +144,7 @@ elapsed TIME multiplying it by 100 to make an integer."
     (setq tomatohead-num (+ 1 tomatohead-num))
     (force-mode-line-update)
     ;; Check if work pomodoro is finished.
-    (if (eq 1500 tomatohead-num)
+    (if (eq tomatohead-work tomatohead-num)
         (progn
           ;; Add one to the completed pomodoros counter.
           (setq tomatohead-pomoatm (+ tomatohead-pomoatm 1))
@@ -155,14 +172,16 @@ elapsed TIME multiplying it by 100 to make an integer."
                       :inherit 'tomatohead-while-sbreak)
   (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-break) tomatohead-break))
   (setq current-char
-        (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
+        (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 20))
                "")
-              ((and (> tomatohead-perc 25) (<= tomatohead-perc 50))
+              ((and (> tomatohead-perc 20) (<= tomatohead-perc 40))
                "░")
-              ((and (> tomatohead-perc 50) (<= tomatohead-perc 75))
+              ((and (> tomatohead-perc 40) (<= tomatohead-perc 60))
                "▒")
-              ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
+              ((and (> tomatohead-perc 60) (<= tomatohead-perc 80))
                "▓")
+              ((and (> tomatohead-perc 80) (= tomatohead-perc 100))
+               "█")
               ))
   
   (setq header-line-format
@@ -190,14 +209,16 @@ elapsed TIME multiplying it by 100 to make an integer."
                       :inherit 'tomatohead-while-lbreak)
   (setq tomatohead-perc (tomatohead-perc-of-char tomatohead-num (tomatohead-qty-of-chars tomatohead-num tomatohead-lgbreak) tomatohead-lgbreak))
   (setq current-char
-        (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 25))
+        (cond ((and (eq tomatohead-perc 0) (<= tomatohead-perc 20))
                "")
-              ((and (> tomatohead-perc 25) (<= tomatohead-perc 50))
+              ((and (> tomatohead-perc 20) (<= tomatohead-perc 40))
                "░")
-              ((and (> tomatohead-perc 50) (<= tomatohead-perc 75))
+              ((and (> tomatohead-perc 40) (<= tomatohead-perc 60))
                "▒")
-              ((and (> tomatohead-perc 75) (<= tomatohead-perc 100))
+              ((and (> tomatohead-perc 60) (<= tomatohead-perc 80))
                "▓")
+              ((and (> tomatohead-perc 80) (<= tomatohead-perc 100))
+               "█")
               ))
 
   (setq header-line-format
